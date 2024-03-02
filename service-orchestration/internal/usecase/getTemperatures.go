@@ -43,6 +43,7 @@ func (u *GetTemperaturesUseCase) Execute(ctx context.Context, cep string) (Respo
 	tempK := weatherData.Current.TempC + 273
 
 	return Response{
+		City:  cepData.Localidade,
 		TempC: weatherData.Current.TempC,
 		TempF: tempF,
 		TempK: tempK,
