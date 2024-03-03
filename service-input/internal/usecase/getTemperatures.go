@@ -30,10 +30,10 @@ func (u *GetTemperaturesUseCase) Execute(ctx context.Context, cep string) (Respo
 	}
 
 	return Response{
-		City:  weatherData.City,
-		TempC: weatherData.TempC,
-		TempF: weatherData.TempF,
-		TempK: weatherData.TempK,
+		City:  weatherData.Data.City,
+		TempC: weatherData.Data.TempC,
+		TempF: weatherData.Data.TempF,
+		TempK: weatherData.Data.TempK,
 	}, nil
 
 }

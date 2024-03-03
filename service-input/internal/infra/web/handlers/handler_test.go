@@ -55,10 +55,14 @@ func (suite *HandlerSuite) TestGetTemperatures() {
 			name: "should return correct temperatures",
 			expectations: func(getTemperatureService *mock.MockGetTemperatureServiceInterface) {
 				getTemperatureService.EXPECT().GetTemperatureService(gomock.Any(), "12345678").Return(service.GetTemperatureServiceResponse{
-					City:  "city",
-					TempC: 20,
-					TempF: 68,
-					TempK: 293,
+					Success: true,
+					Message: "success",
+					Data: service.DataResponse{
+						City:  "city",
+						TempC: 20,
+						TempF: 68,
+						TempK: 293,
+					},
 				}, nil)
 			},
 			expectedResponse: utils.ResponseDTO{
