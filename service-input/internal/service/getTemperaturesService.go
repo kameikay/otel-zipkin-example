@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type DataResponse struct {
@@ -43,6 +45,8 @@ func (s *GetTemperatureService) GetTemperatureService(ctx context.Context, cep s
 	if err != nil {
 		return GetTemperatureServiceResponse{}, err
 	}
+
+	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(req.Header))
 
 	res, err := s.client.Do(req)
 	if err != nil {
