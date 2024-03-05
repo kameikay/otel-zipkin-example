@@ -9,6 +9,9 @@ import (
 	"github.com/kameikay/service-input/internal/usecase"
 	"github.com/kameikay/service-input/pkg/exceptions"
 	"github.com/kameikay/service-input/pkg/utils"
+	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type Handler struct {
@@ -26,6 +29,13 @@ func NewHandler(weatherApiService service.GetTemperatureServiceInterface) *Handl
 }
 
 func (h *Handler) GetTemperatures(w http.ResponseWriter, r *http.Request) {
+	carrier := propagation.HeaderCarrier(r.Header)
+	ctx := otel.GetTextMapPropagator().Extract(r.Context(), carrier)
+	tracer := otel.Tracer(viper.GetString("SERVICE_NAME"))
+
+	ctx, span := tracer.Start(ctx, "GetTemperaturesHandler")
+	defer span.End()
+
 	var input InputDTO
 	err := json.NewDecoder(r.Body).Decode(&input)
 	if err != nil {
@@ -47,7 +57,7 @@ func (h *Handler) GetTemperatures(w http.ResponseWriter, r *http.Request) {
 	}
 
 	getTemperaturesUseCase := usecase.NewGetTemperatureUseCase(h.weatherApiService)
-	data, err := getTemperaturesUseCase.Execute(r.Context(), input.Cep)
+	data, err := getTemperaturesUseCase.Execute(ctx, input.Cep)
 	if err != nil {
 		if err.Error() == exceptions.ErrInvalidCEP.Error() {
 			utils.JsonResponse(w, utils.ResponseDTO{
