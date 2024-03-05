@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/kameikay/service-orchestration/pkg/exceptions"
+	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel"
 )
 
 type ViaCEPResponse struct {
@@ -35,6 +37,10 @@ func NewViaCepService() *ViaCepService {
 }
 
 func (s *ViaCepService) GetCEPData(ctx context.Context, cep string) (*ViaCEPResponse, error) {
+	tracer := otel.Tracer(viper.GetString("SERVICE_NAME"))
+	ctx, span := tracer.Start(ctx, "ViaCEPService.GetCEPData")
+	defer span.End()
+
 	url := "http://viacep.com.br/ws/" + cep + "/json"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

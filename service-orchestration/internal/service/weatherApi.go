@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel"
 )
 
 type WeatherAPIResponse struct {
@@ -32,6 +33,10 @@ func NewWeatherApiService() *WeatherApiService {
 }
 
 func (s *WeatherApiService) GetWeatherData(ctx context.Context, location string) (*WeatherAPIResponse, error) {
+	tracer := otel.Tracer(viper.GetString("SERVICE_NAME"))
+	ctx, span := tracer.Start(ctx, "WeatherAPI.GetWeatherData")
+	defer span.End()
+
 	WEATHER_API_KEY := viper.GetString("WEATHER_API_KEY")
 	urlString := fmt.Sprintf("http://api.weatherapi.com/v1/current.json?key=%s&q=%s&aqi=no", WEATHER_API_KEY, url.QueryEscape(location))
 
