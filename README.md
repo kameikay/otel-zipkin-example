@@ -22,17 +22,17 @@ The goal of this project is to develop a system in Go that takes a postal code a
 
 ### Environment Variables
 
-- Service Input:
+1. Service Input:
 
--- WEATHER_SERVICE_URL = http://service-orchestration:8081/
--- SERVICE_NAME = service-input
--- OTEL_COLLECTOR_ADDR = otel-collector:4317
+- WEATHER_SERVICE_URL = http://service-orchestration:8081/
+- SERVICE_NAME = service-input
+- OTEL_COLLECTOR_ADDR = otel-collector:4317
 
-- Service Orchestration:
+2. Service Orchestration:
 
--- WEATHER_API_KEY = {YOUR_API_KEY} (WeatherAPI)[https://www.weatherapi.com/]
--- SERVICE_NAME = service-orchestration
--- OTEL_COLLECTOR_ADDR = otel-collector:4317
+- WEATHER_API_KEY = {YOUR_API_KEY} (WeatherAPI)[https://www.weatherapi.com/]
+- SERVICE_NAME = service-orchestration
+- OTEL_COLLECTOR_ADDR = otel-collector:4317
 
 ### Running via docker-file
 
