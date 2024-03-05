@@ -50,7 +50,6 @@ func (suite *HandlerSuite) TestGetTemperatures() {
 		cep              string
 		expectations     func(viaCepService *mock.MockViaCepServiceInterface, weatherApiService *mock.MockWeatherApiServiceInterface)
 		expectedResponse utils.ResponseDTO
-		method           string
 	}{
 		{
 			name: "should return correct temperatures",
@@ -73,20 +72,6 @@ func (suite *HandlerSuite) TestGetTemperatures() {
 				Success:    true,
 				Data:       usecase.Response{TempC: 20, TempF: 68, TempK: 293},
 			},
-			method: http.MethodGet,
-		},
-		{
-			name: "should return error when method is not allowed",
-			cep:  "12345-678",
-			expectations: func(viaCepService *mock.MockViaCepServiceInterface, weatherApiService *mock.MockWeatherApiServiceInterface) {
-				viaCepService.EXPECT().GetCEPData(gomock.Any(), "12345-678").Times(0)
-			},
-			expectedResponse: utils.ResponseDTO{
-				StatusCode: http.StatusMethodNotAllowed,
-				Message:    http.StatusText(http.StatusMethodNotAllowed),
-				Success:    false,
-			},
-			method: http.MethodPost,
 		},
 		{
 			name: "should return error when cep is invalid",
@@ -99,7 +84,6 @@ func (suite *HandlerSuite) TestGetTemperatures() {
 				Message:    exceptions.ErrInvalidCEP.Error(),
 				Success:    false,
 			},
-			method: http.MethodGet,
 		},
 		{
 			name: "should return error when there is an error getting data from services",
@@ -112,7 +96,6 @@ func (suite *HandlerSuite) TestGetTemperatures() {
 				Message:    "error",
 				Success:    false,
 			},
-			method: http.MethodGet,
 		},
 		{
 			name: "should return error when cep is not found",
@@ -125,14 +108,13 @@ func (suite *HandlerSuite) TestGetTemperatures() {
 				Message:    exceptions.ErrCannotFindZipcode.Error(),
 				Success:    false,
 			},
-			method: http.MethodGet,
 		},
 	}
 
 	for _, tc := range testCases {
 		suite.T().Run(tc.name, func(t *testing.T) {
 			tc.expectations(suite.viaCepService, suite.weatherApiService)
-			request := httptest.NewRequest(tc.method, "http://test/?cep="+tc.cep, nil)
+			request := httptest.NewRequest(http.MethodGet, "http://test/?cep="+tc.cep, nil)
 			recorder := httptest.NewRecorder()
 
 			handler := NewHandler(suite.viaCepService, suite.weatherApiService)

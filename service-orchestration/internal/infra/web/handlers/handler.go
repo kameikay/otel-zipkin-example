@@ -9,6 +9,9 @@ import (
 	"github.com/kameikay/service-orchestration/internal/usecase"
 	"github.com/kameikay/service-orchestration/pkg/exceptions"
 	"github.com/kameikay/service-orchestration/pkg/utils"
+	"github.com/spf13/viper"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 )
 
 type Handler struct {
@@ -27,14 +30,12 @@ func NewHandler(
 }
 
 func (h *Handler) GetTemperatures(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		utils.JsonResponse(w, utils.ResponseDTO{
-			StatusCode: http.StatusMethodNotAllowed,
-			Message:    http.StatusText(http.StatusMethodNotAllowed),
-			Success:    false,
-		})
-		return
-	}
+	carrier := propagation.HeaderCarrier(r.Header)
+	ctx := otel.GetTextMapPropagator().Extract(r.Context(), carrier)
+	tracer := otel.Tracer(viper.GetString("SERVICE_NAME"))
+
+	ctx, span := tracer.Start(ctx, "GetTemperaturesHandler")
+	defer span.End()
 
 	cepParam := r.URL.Query().Get("cep")
 	cep, err := h.formatCEP(cepParam)
@@ -48,7 +49,7 @@ func (h *Handler) GetTemperatures(w http.ResponseWriter, r *http.Request) {
 	}
 
 	getTemperaturesUseCase := usecase.NewGetTemperatureUseCase(h.viaCepService, h.weatherApiService)
-	data, err := getTemperaturesUseCase.Execute(r.Context(), cep)
+	data, err := getTemperaturesUseCase.Execute(ctx, cep)
 	if err != nil {
 		if err == exceptions.ErrCannotFindZipcode {
 			utils.JsonResponse(w, utils.ResponseDTO{
