@@ -16,14 +16,16 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func SetupOTel(ctx context.Context) (func(ctx context.Context) error, error) {
+func SetupOTel() (func(ctx context.Context) error, error) {
+	ctx := context.Background()
+
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
-			semconv.ServiceName("service-input"),
+			semconv.ServiceName(viper.GetString("SERVICE_NAME")),
 		),
 	)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create resource: %w", err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second)

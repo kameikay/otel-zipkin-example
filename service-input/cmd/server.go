@@ -26,13 +26,13 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	shutdown, err := configs.SetupOTel(ctx)
+	shutdown, err := configs.SetupOTel()
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	defer func() {
-		if err := shutdown(ctx); err != nil {
+		if err := shutdown(context.Background()); err != nil {
 			log.Fatal("failed to shutdown tracer provider: ", err)
 		}
 	}()
@@ -53,7 +53,7 @@ func main() {
 	case <-signChannel:
 		log.Println("shutting down server gracefully...")
 	case <-ctx.Done():
-		log.Println("shutting down server...")
+		cancel()
 	}
 
 	_, shutdownCancel := context.WithTimeout(context.Background(), 10*time.Second)
