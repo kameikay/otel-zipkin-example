@@ -30,7 +30,7 @@ The goal of this project is to develop a system in Go that takes a postal code a
 
 2. Service Orchestration:
 
-- WEATHER_API_KEY = {YOUR_API_KEY} (WeatherAPI)[https://www.weatherapi.com/]
+- WEATHER_API_KEY = {YOUR_API_KEY} [WeatherAPI](https://www.weatherapi.com/)
 - SERVICE_NAME = service-orchestration
 - OTEL_COLLECTOR_ADDR = otel-collector:4317
 
