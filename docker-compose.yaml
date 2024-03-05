@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  service-input:
+    image: service-input
+    restart: always
+    build:
+      context: ./service-input
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - otel-collector
+      - zipkin-all-in-one
+  
+  service-orchestration:
+    image: service-orchestration
+    restart: always
+    build:
+      context: ./service-orchestration
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - otel-collector
+      - zipkin-all-in-one
+  
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    restart: always
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./.docker/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+    ports:
+      - "4317:4317"
+  
+  zipkin-all-in-one:
+    image: openzipkin/zipkin:latest
+    restart: always
+    ports:
+      - "9411:9411"
+  
