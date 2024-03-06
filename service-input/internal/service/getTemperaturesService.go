@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/spf13/viper"
@@ -55,14 +56,14 @@ func (s *GetTemperatureService) GetTemperatureService(ctx context.Context, cep s
 
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return GetTemperatureServiceResponse{}, err
-	}
-
 	var response GetTemperatureServiceResponse
 	err = json.NewDecoder(res.Body).Decode(&response)
 	if err != nil {
 		return GetTemperatureServiceResponse{}, err
+	}
+
+	if !response.Success {
+		return GetTemperatureServiceResponse{}, errors.New(response.Message)
 	}
 
 	return response, nil
