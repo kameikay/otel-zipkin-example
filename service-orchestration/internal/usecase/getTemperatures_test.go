@@ -63,6 +63,7 @@ func (suite *GetTemperaturesUseCaseSuite) TestExecute() {
 				}, nil)
 			},
 			expectedResp: Response{
+				City:  "São Paulo",
 				TempC: 25,
 				TempF: 77,
 				TempK: 298,
