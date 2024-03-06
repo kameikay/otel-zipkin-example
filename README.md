@@ -42,7 +42,7 @@ docker-compose up
 ```
 2. Make a request to the service-input:
 ```bash
-curl --request POST --url 'http://localhost:8080' -H "Content-Type: application/json" -d '{"cep" : "01001-000"}'
+curl --request POST --url 'http://localhost:8080' -H "Content-Type: application/json" -d '{"cep" : "01001000"}'
 ```
 
 ## Zipkin
